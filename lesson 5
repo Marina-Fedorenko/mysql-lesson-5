@@ -104,3 +104,62 @@ mysql> SELECT * FROM storehouses_products ORDER BY
 |  3 | paint  |     0 |
 +----+--------+-------+
 5 rows in set (0.00 sec)
+
+Практическое задание теме «Агрегация данных»
+Подсчитайте средний возраст пользователей в таблице users.
+ALTER TABLE users ADD COLUMN birthday DATE NOT NULL AFTER name;
+Query OK, 0 rows affected (0.11 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+mysql> INSERT INTO users (name, birthday, created_at, updated_at) VALUES
+    -> ('John', '1985-01-12', NOW(), NOW()
+    ('Mike', '2002-03-29', NOW(), NOW()
+    ('Phil', '1997-10-13', NOW(), NOW());
+Query OK, 3 rows affected (0.01 sec));
+SELECT * FROM users;
++----+------+------------+---------------------+---------------------+
+| id | name | birthday   | created_at          | updated_at          |
++----+------+------------+---------------------+---------------------+
+|  5 | John | 1985-01-12 | 2021-01-11 15:58:32 | 2021-01-11 15:58:32 |
+|  6 | Mike | 2002-03-29 | 2021-01-11 16:01:22 | 2021-01-11 16:01:22 |
+|  7 | Phil | 1997-10-13 | 2021-01-11 16:01:35 | 2021-01-11 16:01:35 |
++----+------+------------+---------------------+---------------------+
+3 rows in set (0.00 sec)
+Query OK, 1 row affected (0.01 sec)
+mysql> SELECT
+    -> name
+    -> ,
+    -> (TO_DAYS(NOW()) - TO_DAYS(birthday)) / 365.25 AS age
+    -> FROM
+    -> users;
++------+---------+
+| name | age     |
++------+---------+
+| John | 35.9973 |
+| Mike | 18.7899 |
+| Phil | 23.2471 |
++------+---------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT
+    -> name,
+    -> FLOOR((TO_DAYS(NOW()) - TO_DAYS(birthday)) / 365.25) AS age
+    -> FROM
+    -> users;
++------+------+
+| name | age  |
++------+------+
+| John |   35 |
+| Mike |   18 |
+| Phil |   23 |
++------+------+
+3 rows in set (0.00 sec)
+mysql> SELECT AVG(age) FROM users;
+ERROR 1054 (42S22): Unknown column 'age' in 'field list' ** вот тут выдает ошибку, я понимаю, в чем суть, но не понимаю, как дальше сделать. 
+добавить новую колонку и туда записать данные, кажется, не тем вариантом, который нужен. Поэтому у меня получилось посчитать только среднее годлов их рождения.
+mysql> SELECT AVG(birthday) FROM users;
++---------------+
+| AVG(birthday) |
++---------------+
+| 19947151.3333 |
++---------------+
+1 row in set (0.00 sec)
